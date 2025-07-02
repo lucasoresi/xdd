@@ -1,0 +1,6 @@
+## Repositorio: https://github.com/gramoscelli/Proyecto-Final-Prog3
+
+##Objetivo:
+Portfolio de Proyectos Descripción Aplicación simple para mostrar proyectos profesionales.
+
+Funcionalidades Principales Crear fichas de proyectos Subir imágenes de proyectos Categorizar por tipo de tecnología Agregar descripción y enlaces Marcar proyectos como destacados

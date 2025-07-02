@@ -2,10 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const path = require('path');
 require('dotenv').config();
-
-const { sequelize } = require('./models');
-const routes = require('./routes');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -25,11 +23,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // Logging
 if (process.env.NODE_ENV !== 'test') {
-  app.use(morgan('combined'));
+  app.use(morgan('dev'));
 }
 
-// Rutas
-app.use('/api', routes);
+// Rutas de la API
+app.use('/api/projects', require('./routes/projectRoutes'));
 
 // Health check en la raíz
 app.get('/health', (req, res) => {
