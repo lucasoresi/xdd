@@ -3,10 +3,33 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
+const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
+// Inicializar la aplicación Express
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Configuración de Supabase
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ Error: Las variables de entorno de Supabase no están configuradas correctamente');
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: false
+  }
+});
+
+// Hacer que supabase esté disponible en todas las rutas
+app.use((req, res, next) => {
+  req.supabase = supabase;
+  next();
+});
 
 // Middleware de seguridad
 app.use(helmet());
@@ -27,77 +50,110 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 // Rutas de la API
+app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
 
 // Health check en la raíz
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  });
+app.get('/health', async (req, res) => {
+  try {
+    // Verificar conexión con Supabase
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .limit(1);
+
+    if (error) throw error;
+
+    res.status(200).json({
+      status: 'OK',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      database: 'Connected'
+    });
+  } catch (error) {
+    console.error('Health check failed:', error);
+    res.status(500).json({
+      status: 'ERROR',
+      database: 'Connection failed',
+      error: error.message
+    });
+  }
+});
+
+// Ruta de prueba de conexión a Supabase
+app.get('/api/test-db', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*')
+      .limit(5);
+
+    if (error) throw error;
+
+    res.json({
+      success: true,
+      data: data || []
+    });
+  } catch (error) {
+    console.error('Database test failed:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 // Manejo de errores
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error('Error:', err.stack);
   res.status(500).json({
-    error: 'Something went wrong!',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+    error: 'Algo salió mal!',
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Error interno del servidor'
   });
 });
 
 // Manejo de rutas no encontradas
 app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+  res.status(404).json({ 
+    error: 'Ruta no encontrada',
+    path: req.originalUrl 
+  });
 });
 
-// Inicializar servidor
-async function startServer() {
-  try {
-    // Probar conexión a la base de datos
-    await sequelize.authenticate();
-    console.log('✅ Database connection established successfully.');
-    
-    // En desarrollo, sincronizar modelos
-    if (process.env.NODE_ENV === 'development') {
-      await sequelize.sync({ alter: false });
-      console.log('✅ Database synchronized');
-    }
-    
-    app.listen(PORT, () => {
-      console.log(`🚀 Server is running on port ${PORT}`);
-      console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`🔗 API available at: http://localhost:${PORT}/api`);
-    });
-  } catch (error) {
-    console.error('❌ Unable to start server:', error);
-    // Continuar sin base de datos para desarrollo
-    app.listen(PORT, () => {
-      console.log(`⚠️  Server started without database on port ${PORT}`);
-    });
-  }
-}
-
-startServer();
+// Iniciar el servidor
+const server = app.listen(PORT, () => {
+  console.log(`🚀 Servidor ejecutándose en el puerto ${PORT}`);
+  console.log(`📝 Entorno: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔗 API disponible en: http://localhost:${PORT}/api`);
+  console.log(`🔍 Prueba la conexión a la base de datos visitando: http://localhost:${PORT}/api/test-db`);
+});
 
 // Manejo de cierre graceful
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM received, shutting down gracefully');
+const gracefulShutdown = async () => {
+  console.log('\n🔴 Recibida señal de apagado. Cerrando el servidor...');
+  
   try {
-    await sequelize.close();
+    // Cerrar el servidor
+    await new Promise((resolve) => server.close(resolve));
+    console.log('✅ Servidor cerrado correctamente');
+    process.exit(0);
   } catch (error) {
-    console.error('Error closing database:', error);
+    console.error('Error durante el cierre del servidor:', error);
+    process.exit(1);
   }
-  process.exit(0);
+};
+
+// Manejadores de señales
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
+
+// Manejo de errores no capturados
+process.on('uncaughtException', (error) => {
+  console.error('⚠️ Error no capturado:', error);
+  process.exit(1);
 });
 
-process.on('SIGINT', async () => {
-  console.log('SIGINT received, shutting down gracefully');
-  try {
-    await sequelize.close();
-  } catch (error) {
-    console.error('Error closing database:', error);
-  }
-  process.exit(0);
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('⚠️ Promesa rechazada no manejada:', reason);
+  process.exit(1);
 });

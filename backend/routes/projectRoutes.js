@@ -7,15 +7,15 @@ const {
   updateProject, 
   deleteProject 
 } = require('../controllers/projectController');
-const { authenticateToken } = require('../middleware/auth');
+const { protect, admin } = require('../middleware/authMiddleware');
 
 // Rutas públicas
 router.get('/', getProjects);
 router.get('/:slug', getProjectBySlug);
 
 // Rutas protegidas (requieren autenticación)
-router.post('/', authenticateToken, createProject);
-router.put('/:id', authenticateToken, updateProject);
-router.delete('/:id', authenticateToken, deleteProject);
+router.post('/', protect, createProject);
+router.put('/:id', protect, updateProject);
+router.delete('/:id', protect, admin, deleteProject); // Solo administradores pueden eliminar
 
 module.exports = router;
