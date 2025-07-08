@@ -1,6 +1,5 @@
 import apiService from './api';
-import { Project } from '../types';
-
+import type { Project } from '../types';
 class ProjectService {
   // Get all projects with optional filters
   async getProjects(featured?: boolean, technology?: string): Promise<Project[]> {

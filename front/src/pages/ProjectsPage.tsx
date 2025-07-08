@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import type { Project } from '../types';
 import { useProjects } from '../hooks/useProjects';
 import ProjectGrid from '../components/ProjectGrid';
 

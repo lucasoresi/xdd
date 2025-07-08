@@ -1,5 +1,5 @@
 import React from 'react';
-import { Project } from '../types';
+import type { Project } from '../types';
 import ProjectCard from './ProjectCard';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorMessage from './ErrorMessage';

@@ -1,0 +1,7 @@
+{
+  "path": "./src/components/ui",
+  "resolvers": ["@shadcn/ui"],
+  "aliases": {
+    "@/components": "./src/components"
+  }
+}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Project } from '../types';
+import type { Project } from '../types';
 import projectService from '../services/projectService';
 
 interface UseProjectsOptions {
