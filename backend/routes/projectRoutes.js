@@ -11,6 +11,10 @@ const { protect, admin } = require('../middleware/authMiddleware');
 
 // Rutas públicas
 router.get('/', getProjects);
+router.get('/new', (req, res) => {
+  // Endpoint para mostrar formulario de nuevo proyecto
+  res.json({ message: 'Formulario de nuevo proyecto' });
+});
 router.get('/:slug', getProjectBySlug);
 
 // Rutas protegidas (requieren autenticación)

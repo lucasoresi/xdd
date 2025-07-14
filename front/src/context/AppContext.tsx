@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import type { User } from '../types';
+import type { User } from '../types/index';
 
 interface AppState {
   user: User | null;

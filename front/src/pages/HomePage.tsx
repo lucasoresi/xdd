@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import { useProjects } from '../hooks/useProjects';
 import ProjectCard from '../components/ProjectCard';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
 import { ArrowRight, CheckCircle, Zap, ExternalLink, Code2, Sparkles, Rocket } from 'lucide-react';
 
 const HomePage: React.FC = () => {

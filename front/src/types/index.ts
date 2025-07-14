@@ -1,3 +1,4 @@
+// Technology interface
 export interface Technology {
   id: string;
   name: string;
@@ -6,6 +7,7 @@ export interface Technology {
   color?: string;
 }
 
+// Project related interfaces
 export interface ProjectTechnology {
   technology_id: string;
   technologies: Technology;
@@ -38,6 +40,7 @@ export interface Project {
   project_images: ProjectImage[];
 }
 
+// User and Auth interfaces
 export interface User {
   id: string;
   email: string;
@@ -66,7 +69,10 @@ export interface RegisterData {
   name: string;
 }
 
+// API Error interface
 export interface ApiError {
   error: string;
   details?: string;
 }
+
+// All types exported above

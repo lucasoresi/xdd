@@ -43,7 +43,7 @@ const protect = async (req, res, next) => {
 
 // Middleware para verificar roles de administrador
 const admin = (req, res, next) => {
-  if (req.user && req.user.role === 'admin') {
+  if (req.user && req.user.username === 'admin') {
     next();
   } else {
     res.status(403).json({ error: 'Acceso denegado, se requieren privilegios de administrador' });

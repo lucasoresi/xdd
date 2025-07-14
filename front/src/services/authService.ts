@@ -1,5 +1,33 @@
 import apiService from './api';
-import { AuthResponse, LoginData, RegisterData, User } from '../types';
+
+// Inline type definitions temporarily
+interface AuthResponse {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  token: string;
+}
+
+interface LoginData {
+  email: string;
+  password: string;
+}
+
+interface RegisterData {
+  email: string;
+  password: string;
+  name: string;
+}
+
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  created_at: string;
+  updated_at: string;
+}
 
 class AuthService {
   // Register new user
@@ -82,7 +110,7 @@ class AuthService {
   // Check if user is admin
   isAdmin(): boolean {
     const user = this.getCurrentUser();
-    return user?.role === 'admin';
+    return user?.name === 'admin'; // Usar name en lugar de role
   }
 }
 

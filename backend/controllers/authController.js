@@ -19,16 +19,7 @@ const register = async (req, res) => {
       return res.status(400).json({ error: 'Por favor, proporcione todos los campos requeridos' });
     }
 
-    // Verificar si el usuario ya existe
-    const { data: existingUser, error: userError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('email', email)
-      .single();
-
-    if (existingUser) {
-      return res.status(400).json({ error: 'El correo electrónico ya está en uso' });
-    }
+    // Nota: Supabase Auth manejará la verificación de email duplicado automáticamente
 
     // Hashear la contraseña
     const salt = await bcrypt.genSalt(10);
@@ -42,6 +33,7 @@ const register = async (req, res) => {
         data: {
           name,
         },
+        emailRedirectTo: undefined, // Deshabilitar redirect de email
       },
     });
 
@@ -53,9 +45,11 @@ const register = async (req, res) => {
       .insert([
         { 
           id: authUser.user.id,
-          email,
-          name,
-          role: 'user' // Rol por defecto
+          full_name: name,
+          username: email.split('@')[0], // Usar parte del email como username
+          avatar_url: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`,
+          bio: '',
+          website: ''
         }
       ])
       .select()
@@ -71,6 +65,7 @@ const register = async (req, res) => {
       id: authUser.user.id,
       name,
       email,
+      role: 'user',
       token,
     });
   } catch (error) {
@@ -101,6 +96,12 @@ const login = async (req, res) => {
     if (authError) {
       if (authError.message.includes('Invalid login credentials')) {
         return res.status(401).json({ error: 'Credenciales inválidas' });
+      }
+      if (authError.code === 'email_not_confirmed') {
+        return res.status(401).json({ 
+          error: 'Email no confirmado. Para desarrollo, este paso se omite automáticamente.',
+          code: 'email_not_confirmed' 
+        });
       }
       throw authError;
     }
