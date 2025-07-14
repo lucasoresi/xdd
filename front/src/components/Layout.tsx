@@ -31,7 +31,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     const checkAuth = () => {
       if (authService.isAuthenticated()) {
         const user = authService.getCurrentUser();
-        if (user) {
+        if (user && !state.user) {
           setUser(user);
           setAuthenticated(true);
         }
@@ -39,7 +39,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     };
 
     checkAuth();
-  }, [setUser, setAuthenticated]);
+  }, []); // Remove dependencies to prevent infinite loop
 
   const isActive = (path: string) => {
     return location.pathname === path;

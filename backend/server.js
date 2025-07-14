@@ -52,6 +52,7 @@ if (process.env.NODE_ENV !== 'test') {
 // Rutas de la API
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
+app.use('/api/upload', require('./routes/uploadRoutes'));
 
 // Health check en la raíz
 app.get('/health', async (req, res) => {

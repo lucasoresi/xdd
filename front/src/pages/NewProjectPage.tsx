@@ -2,17 +2,20 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import projectService from '../services/projectService';
+import uploadService from '../services/uploadService';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Save, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, Upload, X, Image } from 'lucide-react';
 import type { Project } from '../types';
 
 const NewProjectPage: React.FC = () => {
   const navigate = useNavigate();
   const { state: { user }, showNotification } = useAppContext();
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -52,6 +55,44 @@ const NewProjectPage: React.FC = () => {
         .trim();
       setFormData(prev => ({ ...prev, slug }));
     }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo de archivo
+    if (!file.type.startsWith('image/')) {
+      showNotification('Solo se permiten archivos de imagen', 'error');
+      return;
+    }
+
+    // Validar tamaño (5MB máximo)
+    if (file.size > 5 * 1024 * 1024) {
+      showNotification('El archivo no puede ser mayor a 5MB', 'error');
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const response = await uploadService.uploadImage(file);
+      setFormData(prev => ({ ...prev, featured_image: response.url }));
+      setImagePreview(response.url);
+      showNotification('Imagen subida exitosamente', 'success');
+    } catch (error: any) {
+      console.error('Error uploading image:', error);
+      showNotification(
+        error.message || 'Error al subir la imagen',
+        'error'
+      );
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const removeImage = () => {
+    setFormData(prev => ({ ...prev, featured_image: '' }));
+    setImagePreview(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -173,15 +214,102 @@ const NewProjectPage: React.FC = () => {
 
               {/* Featured Image */}
               <div className="space-y-2">
-                <Label htmlFor="featured_image">Imagen Principal</Label>
-                <Input
-                  id="featured_image"
-                  name="featured_image"
-                  type="url"
-                  value={formData.featured_image}
-                  onChange={handleInputChange}
-                  placeholder="https://example.com/image.jpg"
-                />
+                <Label>Imagen Principal</Label>
+                
+                {/* Upload or URL Input */}
+                <div className="space-y-4">
+                  {/* File Upload */}
+                  <div>
+                    <Label htmlFor="image-upload" className="text-sm text-muted-foreground">
+                      Subir desde tu ordenador
+                    </Label>
+                    <div className="mt-1">
+                      <input
+                        id="image-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        disabled={uploadingImage}
+                        className="hidden"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => document.getElementById('image-upload')?.click()}
+                        disabled={uploadingImage}
+                        className="w-full justify-center"
+                      >
+                        {uploadingImage ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Subiendo...
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-4 h-4 mr-2" />
+                            Seleccionar Imagen
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* OR Divider */}
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">
+                        O
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* URL Input */}
+                  <div>
+                    <Label htmlFor="featured_image" className="text-sm text-muted-foreground">
+                      URL de imagen externa
+                    </Label>
+                    <Input
+                      id="featured_image"
+                      name="featured_image"
+                      type="url"
+                      value={formData.featured_image}
+                      onChange={handleInputChange}
+                      placeholder="https://example.com/image.jpg"
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+
+                {/* Image Preview */}
+                {(formData.featured_image || imagePreview) && (
+                  <div className="mt-4">
+                    <div className="relative inline-block">
+                      <img
+                        src={imagePreview || formData.featured_image}
+                        alt="Preview"
+                        className="w-32 h-32 object-cover rounded-lg border"
+                        onError={() => {
+                          setImagePreview(null);
+                          if (formData.featured_image.startsWith('http')) {
+                            showNotification('Error al cargar la imagen', 'error');
+                          }
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={removeImage}
+                        className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* URLs */}
