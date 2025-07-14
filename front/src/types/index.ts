@@ -15,7 +15,9 @@ export interface ProjectImage {
   id: string;
   url: string;
   alt?: string;
+  alt_text?: string;
   is_main?: boolean;
+  order?: number;
 }
 
 export interface Project {
@@ -28,6 +30,8 @@ export interface Project {
   user_id: string;
   demo_url?: string;
   github_url?: string;
+  repo_url?: string;
+  featured_image?: string;
   created_at: string;
   updated_at: string;
   project_technologies: ProjectTechnology[];

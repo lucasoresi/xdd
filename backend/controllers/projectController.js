@@ -8,8 +8,17 @@ const getProjects = async (req, res) => {
       .from('projects')
       .select(`
         *,
-        project_technologies(technology_id, technologies(*)),
-        project_images(*)
+        project_technologies(
+          technology_id,
+          technologies(*)
+        ),
+        project_images(
+          id,
+          url,
+          alt_text,
+          is_main,
+          order
+        )
       `);
 
     // Filtrar por destacados
@@ -42,8 +51,17 @@ const getProjectBySlug = async (req, res) => {
       .from('projects')
       .select(`
         *,
-        project_technologies(technology_id, technologies(*)),
-        project_images(*)
+        project_technologies(
+          technology_id,
+          technologies(*)
+        ),
+        project_images(
+          id,
+          url,
+          alt_text,
+          is_main,
+          order
+        )
       `)
       .eq('slug', slug)
       .single();

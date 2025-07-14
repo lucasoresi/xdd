@@ -93,15 +93,15 @@ INSERT INTO public.project_technologies (project_id, technology_id, created_at) 
 
 -- Insertar imágenes para los proyectos
 -- Imágenes para el Proyecto 1
-INSERT INTO public.project_images (project_id, url, alt_text, "order", created_at) VALUES
-(1, 'https://via.placeholder.com/800x600/1', 'Captura de pantalla 1 del sistema de gestión', 1, NOW()),
-(1, 'https://via.placeholder.com/800x600/2', 'Captura de pantalla 2 del sistema de gestión', 2, NOW());
+INSERT INTO public.project_images (project_id, url, alt_text, is_main, "order", created_at) VALUES
+(1, 'https://via.placeholder.com/800x600/1', 'Captura de pantalla 1 del sistema de gestión', true, 1, NOW()),
+(1, 'https://via.placeholder.com/800x600/2', 'Captura de pantalla 2 del sistema de gestión', false, 2, NOW());
 
 -- Imágenes para el Proyecto 2
-INSERT INTO public.project_images (project_id, url, alt_text, "order", created_at) VALUES
-(2, 'https://via.placeholder.com/800x600/3', 'Página principal del e-commerce', 1, NOW()),
-(2, 'https://via.placeholder.com/800x600/4', 'Carrito de compras', 2, NOW());
+INSERT INTO public.project_images (project_id, url, alt_text, is_main, "order", created_at) VALUES
+(2, 'https://via.placeholder.com/800x600/3', 'Página principal del e-commerce', true, 1, NOW()),
+(2, 'https://via.placeholder.com/800x600/4', 'Carrito de compras', false, 2, NOW());
 
 -- Imágenes para el Proyecto 3
-INSERT INTO public.project_images (project_id, url, alt_text, "order", created_at) VALUES
-(3, 'https://via.placeholder.com/800x600/5', 'Documentación de la API', 1, NOW());
+INSERT INTO public.project_images (project_id, url, alt_text, is_main, "order", created_at) VALUES
+(3, 'https://via.placeholder.com/800x600/5', 'Documentación de la API', true, 1, NOW());

@@ -3,6 +3,8 @@ import type { Project } from '../types';
 import ProjectCard from './ProjectCard';
 import LoadingSpinner from './LoadingSpinner';
 import ErrorMessage from './ErrorMessage';
+import { Card, CardContent } from '@/components/ui/card';
+import { FolderOpen } from 'lucide-react';
 
 interface ProjectGridProps {
   projects: Project[];
@@ -21,38 +23,53 @@ const ProjectGrid: React.FC<ProjectGridProps> = ({
 }) => {
   if (loading) {
     return (
-      <div className={`flex justify-center items-center min-h-96 ${className}`}>
+      <div className={`flex flex-col justify-center items-center min-h-96 ${className}`}>
         <LoadingSpinner size="large" />
+        <p className="mt-4 text-gray-600">Cargando proyectos...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className={className}>
-        <ErrorMessage message={error} onRetry={onRetry} />
-      </div>
+      <Card className={className}>
+        <CardContent className="p-8">
+          <ErrorMessage message={error} onRetry={onRetry} />
+        </CardContent>
+      </Card>
     );
   }
 
   if (projects.length === 0) {
     return (
-      <div className={`text-center py-12 ${className}`}>
-        <div className="text-gray-500">
-          <svg className="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-          </svg>
-          <h3 className="text-xl font-medium text-gray-900 mb-2">No hay proyectos disponibles</h3>
-          <p className="text-gray-500">Parece que no hay proyectos para mostrar en este momento.</p>
-        </div>
+      <div className={`text-center py-16 ${className}`}>
+        <Card className="max-w-md mx-auto">
+          <CardContent className="p-12 text-center">
+            <div className="text-muted-foreground mb-6">
+              <FolderOpen className="w-20 h-20 mx-auto" />
+            </div>
+            <h3 className="text-2xl font-bold mb-3">No hay proyectos disponibles</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Parece que no hay proyectos para mostrar en este momento. 
+              <br />
+              <span className="text-sm">Intenta ajustar los filtros o vuelve más tarde.</span>
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${className}`}>
-      {projects.map((project) => (
-        <ProjectCard key={project.id} project={project} />
+    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ${className}`}>
+      {projects.map((project, index) => (
+        <div
+          key={project.id}
+          className="animate-fade-in"
+          style={{ animationDelay: `${index * 0.1}s` }}
+        >
+          <ProjectCard project={project} />
+        </div>
       ))}
     </div>
   );

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import type { Project } from '../types';
 import { useProjects } from '../hooks/useProjects';
 import ProjectGrid from '../components/ProjectGrid';
+import { Button } from '@/components/ui/button';
+import { Star, Grid3X3, X } from 'lucide-react';
 
 const ProjectsPage: React.FC = () => {
   const [filter, setFilter] = useState<{ featured?: boolean; technology?: string }>({});
@@ -16,46 +18,51 @@ const ProjectsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+      <div className="container mx-auto px-4 py-8" style={{ maxWidth: '70%' }} >
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Portfolio de Proyectos</h1>
-          <p className="text-gray-600">Explora mi colección de proyectos y trabajos realizados</p>
+        <div className="mb-12 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent mb-4">
+            Portfolio de Proyectos
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Explora mi colección de proyectos y trabajos realizados con las últimas tecnologías
+          </p>
         </div>
 
         {/* Filters */}
         <div className="mb-8">
-          <div className="flex flex-wrap gap-4 items-center">
-            <button
+          <div className="flex flex-wrap gap-4 items-center justify-center">
+            <Button
               onClick={() => handleFilterChange({ featured: true })}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                filter.featured 
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-              }`}
+              variant={filter.featured ? "default" : "outline"}
+              size="sm"
+              className="rounded-full"
             >
+              <Star className="w-4 h-4 mr-2" />
               Destacados
-            </button>
+            </Button>
             
-            <button
+            <Button
               onClick={() => handleFilterChange({})}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                !filter.featured && !filter.technology
-                  ? 'bg-blue-600 text-white' 
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-              }`}
+              variant={!filter.featured && !filter.technology ? "default" : "outline"}
+              size="sm"
+              className="rounded-full"
             >
+              <Grid3X3 className="w-4 h-4 mr-2" />
               Todos
-            </button>
+            </Button>
 
             {(filter.featured || filter.technology) && (
-              <button
+              <Button
                 onClick={clearFilters}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-red-600 border border-red-300 hover:bg-red-50 transition-colors"
+                variant="outline"
+                size="sm"
+                className="rounded-full text-destructive border-destructive hover:bg-destructive hover:text-destructive-foreground"
               >
+                <X className="w-4 h-4 mr-2" />
                 Limpiar filtros
-              </button>
+              </Button>
             )}
           </div>
         </div>
