@@ -18,7 +18,7 @@
 
 ### Backend
 - **Express.js** con middleware de seguridad
-- **Supabase** como base de datos principal
+- **Supabase** como base de datos principal y storage
 - **JWT** para autenticación
 - **Multer** para carga de archivos
 - **Helmet** y **CORS** para seguridad
@@ -40,7 +40,7 @@
                                               │
                    ┌─────────────┐    ┌─────────────┐
                    │    Redis    │    │  Supabase   │
-                   │  (Cache)    │    │    (DB)     │
+                   │  (Cache)    │    │ (DB+Storage)│
                    │   :6379     │    │   Cloud     │
                    └─────────────┘    └─────────────┘
 ```
@@ -93,6 +93,7 @@ npm run dev
 # Supabase
 SUPABASE_URL=tu_supabase_url
 SUPABASE_ANON_KEY=tu_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=tu_service_role_key # (Opcional, para upload admin)
 
 # Backend
 PORT=3001
@@ -130,13 +131,15 @@ portfolio-proyectos/
 │   │   └── database.js        # Config PostgreSQL (fallback)
 │   ├── controllers/           # Lógica de negocio
 │   │   ├── authController.js  # Autenticación
-│   │   └── projectController.js # Gestión de proyectos
+│   │   ├── projectController.js # Gestión de proyectos
+│   │   └── uploadController.js  # Subida de archivos
 │   ├── middleware/            # Middlewares
 │   │   ├── auth.js           # Autenticación JWT
 │   │   └── authMiddleware.js  # Middleware de auth
 │   ├── routes/               # Rutas API
 │   │   ├── authRoutes.js     # Rutas de auth
-│   │   └── projectRoutes.js  # Rutas de proyectos
+│   │   ├── projectRoutes.js  # Rutas de proyectos
+│   │   └── uploadRoutes.js   # Rutas de upload
 │   └── server.js             # Servidor principal
 │
 ├── front/                     # Aplicación React
@@ -149,11 +152,15 @@ portfolio-proyectos/
 │   │   ├── pages/           # Páginas principales
 │   │   │   ├── HomePage.tsx  # Página inicio
 │   │   │   ├── ProjectsPage.tsx # Lista de proyectos
-│   │   │   └── ProjectDetailPage.tsx # Detalle proyecto
+│   │   │   ├── NewProjectPage.tsx # Crear proyecto
+│   │   │   ├── ProjectDetailPage.tsx # Detalle proyecto
+│   │   │   ├── LoginPage.tsx # Iniciar sesión
+│   │   │   └── RegisterPage.tsx # Registro
 │   │   ├── services/        # Servicios API
 │   │   │   ├── api.ts       # Cliente HTTP
 │   │   │   ├── authService.ts # Servicio auth
-│   │   │   └── projectService.ts # Servicio proyectos
+│   │   │   ├── projectService.ts # Servicio proyectos
+│   │   │   └── uploadService.ts # Servicio upload
 │   │   ├── types/           # Tipos TypeScript
 │   │   └── hooks/           # Hooks customizados
 │   │       └── useProjects.ts # Hook para proyectos
@@ -223,13 +230,16 @@ npm run lint
 
 - ✅ **Autenticación JWT** con Supabase
 - ✅ **CRUD completo** de proyectos
-- ✅ **Carga de imágenes** con validación
+- ✅ **Carga de imágenes** desde el ordenador con Supabase Storage
 - ✅ **Categorización** por tecnologías
 - ✅ **Proyectos destacados** (featured)
 - ✅ **Diseño responsive** con TailwindCSS
 - ✅ **Hot reload** en desarrollo
 - ✅ **Middleware de seguridad** (Helmet, CORS)
-- ✅ **Rate limiting** y validación de entrada
+- ✅ **Validación de archivos** (tipo y tamaño)
+- ✅ **Preview de imágenes** en tiempo real
+- ✅ **Gestión completa de usuarios** (registro/login)
+- ✅ **Context API** para estado global
 
 ## 🔒 Seguridad
 
@@ -253,9 +263,16 @@ GET  /api/auth/profile   # Obtener perfil
 ```
 GET    /api/projects           # Listar proyectos
 POST   /api/projects           # Crear proyecto
-GET    /api/projects/:id       # Obtener proyecto
+GET    /api/projects/new       # Formulario nuevo proyecto
+GET    /api/projects/:slug     # Obtener proyecto por slug
 PUT    /api/projects/:id       # Actualizar proyecto
 DELETE /api/projects/:id       # Eliminar proyecto
+```
+
+### Upload de Archivos
+```
+POST   /api/upload/image       # Subir imagen (requiere auth)
+DELETE /api/upload/image       # Eliminar imagen (requiere auth)
 ```
 
 ### Salud
@@ -281,6 +298,29 @@ docker-compose logs backend
 
 # Verificar variables de entorno
 docker-compose exec backend env | grep SUPABASE
+```
+
+### Error de upload de imágenes
+```bash
+# Verificar bucket en Supabase Storage
+# 1. Ir a Supabase Dashboard > Storage
+# 2. Crear bucket 'project-images' si no existe
+# 3. Configurar políticas RLS:
+
+# Política para INSERT (cualquier usuario)
+CREATE POLICY "Anyone can upload to project-images" ON storage.objects
+FOR INSERT WITH CHECK (bucket_id = 'project-images');
+
+# Política para SELECT (lectura pública)
+CREATE POLICY "Anyone can view project images" ON storage.objects
+FOR SELECT USING (bucket_id = 'project-images');
+```
+
+### Loop infinito en React
+```bash
+# Si ves "Maximum update depth exceeded"
+# Verificar useEffect dependencies en Layout.tsx
+# Asegurar que no haya dependencias circulares
 ```
 
 ### Hot reload no funciona
