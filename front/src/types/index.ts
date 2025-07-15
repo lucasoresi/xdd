@@ -1,3 +1,14 @@
+// User and Auth interfaces
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  avatar_url?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 // Technology interface
 export interface Technology {
   id: string;
@@ -38,16 +49,7 @@ export interface Project {
   updated_at: string;
   project_technologies: ProjectTechnology[];
   project_images: ProjectImage[];
-}
-
-// User and Auth interfaces
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-  created_at: string;
-  updated_at: string;
+  user?: User;
 }
 
 export interface AuthResponse {

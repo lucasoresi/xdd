@@ -5,6 +5,7 @@ import projectService from '../services/projectService';
 interface UseProjectsOptions {
   featured?: boolean;
   technology?: string;
+  userId?: string;
 }
 
 export const useProjects = (options?: UseProjectsOptions) => {
@@ -18,7 +19,13 @@ export const useProjects = (options?: UseProjectsOptions) => {
         setLoading(true);
         setError(null);
         const data = await projectService.getProjects(options?.featured, options?.technology);
-        setProjects(data);
+        
+        // Filtrar por usuario si se especifica
+        const filteredData = options?.userId 
+          ? data.filter(project => project.user_id === options.userId)
+          : data;
+          
+        setProjects(filteredData);
       } catch (err: any) {
         setError(err.response?.data?.error || 'Error al cargar los proyectos');
         console.error('Error fetching projects:', err);
@@ -28,7 +35,7 @@ export const useProjects = (options?: UseProjectsOptions) => {
     };
 
     fetchProjects();
-  }, [options?.featured, options?.technology]);
+  }, [options?.featured, options?.technology, options?.userId]);
 
   const refetch = () => {
     setProjects([]);
@@ -36,7 +43,13 @@ export const useProjects = (options?: UseProjectsOptions) => {
     setLoading(true);
     
     projectService.getProjects(options?.featured, options?.technology)
-      .then(setProjects)
+      .then((data) => {
+        // Filtrar por usuario si se especifica
+        const filteredData = options?.userId 
+          ? data.filter(project => project.user_id === options.userId)
+          : data;
+        setProjects(filteredData);
+      })
       .catch((err) => setError(err.response?.data?.error || 'Error al cargar los proyectos'))
       .finally(() => setLoading(false));
   };

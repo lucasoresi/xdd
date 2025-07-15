@@ -7,6 +7,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { NeonGradientCard } from '../components/ui/neon-gradient-card';
 import { Eye, EyeOff, Mail, Lock, User, AlertCircle } from 'lucide-react';
 
 const RegisterPage: React.FC = () => {
@@ -132,9 +133,10 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md animate-fade-in">
-        <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+        <NeonGradientCard className="max-w-md items-center justify-center">
+          <Card className="border-0 bg-transparent shadow-none w-full">
           <CardHeader className="text-center pb-8">
             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
               Crear Cuenta
@@ -295,6 +297,7 @@ const RegisterPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+        </NeonGradientCard>
       </div>
     </div>
   );

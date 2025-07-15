@@ -8,6 +8,7 @@ import ProjectDetailPage from './pages/ProjectDetailPage';
 import NewProjectPage from './pages/NewProjectPage';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
+import ProfilePage from './pages/ProfilePage';
 import './App.css';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/projects/new" element={<NewProjectPage />} />
             <Route path="/projects/:slug" element={<ProjectDetailPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
           </Routes>

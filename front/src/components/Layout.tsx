@@ -8,13 +8,13 @@ import { Avatar } from './ui/avatar';
 import { DropdownMenu, DropdownMenuItem, DropdownMenuSeparator } from './ui/dropdown-menu';
 import { 
   User, 
-  Settings, 
   LogOut, 
   Plus, 
   Folder, 
   Home, 
   ChevronDown,
-  Code2
+  Code2,
+  Github
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -66,10 +66,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   `;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-40">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4" style={{ maxWidth: '70%' }}>
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center space-x-3">
@@ -130,14 +130,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       </div>
                     }
                   >
-                    <DropdownMenuItem icon={<User />}>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/profile')}
+                      icon={<User />}
+                    >
                       Mi Perfil
                     </DropdownMenuItem>
-                    <DropdownMenuItem icon={<Folder />}>
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/projects?filter=my')}
+                      icon={<Folder />}
+                    >
                       Mis Proyectos
-                    </DropdownMenuItem>
-                    <DropdownMenuItem icon={<Settings />}>
-                      Configuración
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem 
@@ -179,27 +182,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Footer */}
       <footer className="bg-white/80 backdrop-blur-lg border-t border-gray-200/50 mt-12">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8" style={{ maxWidth: '70%' }}>
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-md flex items-center justify-center">
-                <Code2 className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-sm text-gray-600">
-                &copy; 2024 Portfolio de Proyectos. Todos los derechos reservados.
-              </span>
+            <div className="flex items-center mb-4 md:mb-0">
+              <a 
+                href="https://github.com/GiuseGio2004/Practicos-Programacion-III.git" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center space-x-2 text-gray-500 hover:text-gray-700 transition-colors text-sm"
+              >
+                <Github className="w-4 h-4" />
+                <span>github.com/GiuseGio2004/Practicos-Programacion-III</span>
+              </a>
             </div>
             
-            <div className="flex items-center space-x-6 text-sm text-gray-500">
-              <a href="#" className="hover:text-gray-700 transition-colors">
-                Términos
-              </a>
-              <a href="#" className="hover:text-gray-700 transition-colors">
-                Privacidad
-              </a>
-              <a href="#" className="hover:text-gray-700 transition-colors">
-                Soporte
-              </a>
+            <div className="flex items-center text-sm text-gray-500">
+              <span className="font-medium">Grupo N°12</span>
             </div>
           </div>
         </div>
